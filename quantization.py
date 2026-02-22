@@ -4,33 +4,40 @@ import numpy as np
 # -----------------------------
 # Load Image in Grayscale
 # -----------------------------
-image = cv2.imread("car.jpg", 0)
+image = cv2.imread("car.jpg", cv2.IMREAD_GRAYSCALE)
 
 if image is None:
     print("Error: Image not found!")
     exit()
 
+# Resize for better visualization
+image = cv2.resize(image, (600, 400))
+
 # -----------------------------
 # Choose Quantization Levels
 # -----------------------------
-levels = 8   # Change to 4, 8, 16 etc.
+levels = 8   # Try 4, 8, 16, 32
 
 # -----------------------------
-# Calculate Step Size
+# Calculate Step Size (Integer)
 # -----------------------------
-step = 256 / levels
+step = 256 // levels   # Integer division (important)
 
 # -----------------------------
-# Apply Quantization
+# Apply Proper Quantization
 # -----------------------------
-quantized = np.floor(image / step) * step
+quantized = (image // step) * step
+
+# Optional: Improve contrast for clearer display
+quantized = cv2.normalize(quantized, None, 0, 255, cv2.NORM_MINMAX)
+
 quantized = quantized.astype(np.uint8)
 
 # -----------------------------
 # Show Images
 # -----------------------------
 cv2.imshow("Original Image", image)
-cv2.imshow("Quantized Image", quantized)
+cv2.imshow(f"Quantized Image ({levels} levels)", quantized)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
